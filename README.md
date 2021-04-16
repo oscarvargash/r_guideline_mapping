@@ -14,7 +14,7 @@ Are is free, go to (https://www.r-project.org/) click on [download R] and select
 
 When you open R you will get a interactive window like this, also called the R console
 
-![](img/r_windown.png)
+![](img/r_window.png)
 
 You can write in this window and interact wih R directly. Let's created a variable "x" and asing the nuber "2" to it. Theype the floowing text and press enter.
 
@@ -32,6 +32,9 @@ x <- 2
 y <- x + x
 y
 ```
+The editor with the code should look like this:
+![](img/editor.png)
+
 To run the code select it and press <kbd>command</kbd> + <kbd>return</kbd>
 R is now making and addition with x, the returning value is then assigned to y. 
 
