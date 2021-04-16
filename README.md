@@ -35,7 +35,8 @@ y
 The editor with the code should look like this:
 ![](img/editor.png)
 
-To run the code select it and press <kbd>command</kbd> + <kbd>return</kbd>
+MAC: to run the code select it and press <kbd>command</kbd> + <kbd>return</kbd>
+PC: to run the code selct it and press <kbd>control</kbd> + <kbd>r</kbd>
 R is now making and addition with x, the returning value is then assigned to y. 
 
 You can save the text file with the code by going to "file" in the menu and then "save". Save your script in any location you want
