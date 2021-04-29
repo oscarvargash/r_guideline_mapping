@@ -153,12 +153,126 @@ Finally that things look right we can map both latitude and longitud in a single
 plot(geodata_f2$decimalLongitude, geodata_f2$decimalLatitude)
 ```
 
+## Drawing our data into digital elevation model
+
+Plese make sure you have daca.csv and the folder "worldborders" in your working directories.
+You can download "worldborders" from:
+
+https://www.dropbox.com/s/x1krwj0pr0v65xc/worldborders.zip?dl=0
+
+Open R and new text file. We will need to install several packages for today's excercise. Please install these packages, it will be better if you add this code to the saved script of last session.
+
+```
+install.packages("mapproj")
+install.packages("raster")
+install.packages("elevatr")
+install.packages("rgdal")
+
+library(dplyr)
+library(mapproj)
+library(raster)
+library(elevatr)
+library(rgdal)
+```
+
+Now we can run all the code we produced last week (in case you did not save the file)
+
+```
+## Import data and ckeck it
+data <- read.csv("~/Desktop/daca/daca.csv")
+head(data)
+
+# call the column with latitude
+data$decimalLatitude
+
+# filter cells withour data
+geodata <- data %>% filter(!is.na(decimalLatitude))
+head(geodata)
+geodata$decimalLatitude
+
+# plot the data
+plot(geodata$decimalLatitude)
+hist(geodata$decimalLatitude, breaks=60)
+
+# Cleaning of extreme latitude localities 
+quantile(geodata$decimalLatitude, c(0.005, 0.995))
+geodata_f <- geodata %>% filter(decimalLatitude > 37, decimalLatitude < 45.30303)
+plot(geodata_f$decimalLatitude)
+hist(geodata_f$decimalLatitude)
+plot(geodata_f$decimalLongitude)
+hist(geodata_f$decimalLongitude)
+
+# Cleaning out extreme ocurrence identified in longitude
+quantile(geodata$decimalLongitude, c(0.005, 0.995))
+geodata_f2 <- geodata_f %>% filter(decimalLongitude < -118.5, decimalLongitude > -124.4014)
+plot(geodata_f2$decimalLongitude)
+hist(geodata_f2$decimalLongitude)
+plot(geodata_f2$decimalLongitude, geodata_f2$decimalLatitude)
+```
+
+# Creating a digital elevation model baselayer
+First we need to create a set of points acroos the boundig box were we plan to graph.
+Looking at the data we know that a good bound box is long -125 to -119 and lat 37 to 45
+
+Let's create a dataset with points in these bounding boxes
+
+```
+ex.df <- data.frame(x=seq(from=-125, to=-119, length.out=10), 
+                    y=seq(from=37, to=45, length.out=10))
+
+plot(ex.df$x, ex.df$y)
+```
+We can see that we simply have created sampling points along a cuadrant
+
+Now we need to define or projection parameters:
+```
+prj_dd <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
+```
+
+Now we can download a digital elevation tile for our map
+```
+elev <- get_elev_raster(ex.df, prj = prj_dd, z = 5, clip = "bbox")
+
+plot(elev)
+```
+
+To make our map more human readable we can crop our DEM just to land areas.
+In order to so, we need to import a layer with world boundaries and then create a spatial item
+```
+path.data <- "worldborders"
+world_borders <- readOGR(dsn = path.data, layer = "TM_WORLD_BORDERS-0.3")
+projection(world_borders) <- CRS(prj_dd)
+```
+
+Now using worldborders we can cut only the land portion of our DEM tile
+```
+elev = mask(elev, world_borders)
+```
+
+# Mapping our points into a DEM
+We are ready to draw our points into a map. Let's do it step by step:
+
+Create a blanck map of the world
+```
+map("world", xlim=c(-125,-119), ylim=(c(37,45)), col="gray")
+
+```
+Add mountains
+```
+plot(elev, col = gray.colors(25, start = 0.5, end = 1, gamma = 1, alpha = 1), add = TRUE, legend=F)
+```
+
+Create a spatial dataset with latitude, longitude, and projection. Then plot over blank
+```
+mysp <- mapproject(geodata_f2$decimalLongitude, geodata_f2$decimalLatitude, proj="")
+points(mysp, col ="black")
+```
+
+Add states
+```
+map("state", xlim=c(-125,-119), ylim=(c(37,45)), col="blue", add=TRUE)
+```
 
 
-
-
-
-
-
-
+Congratulations !!!!!!!
 
