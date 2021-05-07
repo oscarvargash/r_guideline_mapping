@@ -273,6 +273,120 @@ Add states
 map("state", xlim=c(-125,-119), ylim=(c(37,45)), col="blue", add=TRUE)
 ```
 
-
 Congratulations !!!!!!!
+
+# Using loops in R
+Sometimes there is the need to run a task many times for given dataset. Instead of pseudo copying your code many times al loop will be more efficient. For example, if we need to produce a map for 26 species we can create a loop that iterates over the list of species and creates all maps
+
+
+## Importing the dataset and creting a basemap
+
+Let's install and load the packages nedeed for our exercise
+```
+install.packages(c("ggplot2","ggmap"))
+
+library(ggplot2)
+library(ggmap)
+library(dplyr)
+```
+
+Today we are going to create a working directory. This will make importing and saving easier.
+```
+setwd("/Users/ov20/Desktop/Abronia")
+getwd()
+```
+
+Now download the dataset and place it in such directory
+
+https://www.dropbox.com/s/s9do9kz4zrur8pw/abronia_2.csv?dl=0
+
+Once the dataset is in the "Abronia" directory you can import the data:
+
+```
+data <- read.csv("Abronia_2.csv")
+head(data)
+tail(data)
+```
+
+Like in our previous example we need to filter out data without a georreference
+```
+geodata <- data %>% filter(!is.na(decimalLatitude))
+tail(geodata)
+```
+
+Now we can plot the records and do some basic filtering
+```
+plot(geodata$decimalLongitude, geodata$decimalLatitude)
+geodata2 <- geodata %>% filter(decimalLatitude > 10)
+plot(geodata2$decimalLongitude, geodata2$decimalLatitude)
+```
+
+Let's check how many species are in our dataset and how many records per species we have.
+```
+Ab_sp <- geodata %>% group_by(species) %>% tally()
+```
+
+Now we need to create a basemap. Notice that this map is different from the one we created with Darlingtonia
+```
+basemap <-  get_map(location = c(-140, 10, -70, 60), zoom = 4)
+ggmap(basemap)
+```
+
+Now, let's map all the dataset points in the base map
+```
+ggmap(basemap) + geom_point(data = geodata2, aes(x=decimalLongitude, y=decimalLatitude, color=species))
+```
+
+## Creating a map for a single species
+1. Create a subdataset for a single species
+```
+abla <- geodata2 %>% filter(species == "Abronia latifolia")
+head(abla)
+tail(abla)
+```
+
+2. Create a name for the resulting pdf file with the map
+```
+pdfName <- "Abronia latifolia .pdf" 
+```
+
+3. Draw the map
+```
+ggmap(basemap) + geom_point(data = abla, aes(x=decimalLongitude, y=decimalLatitude)) + ggtitle("Abronia latifolia")
+
+```
+
+4. Save the map
+```
+ggsave(filename = pdfName, plot=last_plot()) 
+```
+
+Cool!
+
+## Using a loop to draw a map for each species
+
+In R a loop uses the floowing logic
+
+for (item in item_list){
+	perform_action_1
+	perform_action_2
+	etc
+}
+
+In our case our loop would look like this, notice that it contains every step used previously to create a single map
+```
+for (x in (Ab_sp$species)) {
+	sp_data <- geodata2 %>% filter(species == x) #1
+	outname <- paste(x, ".pdf") #2
+	ggmap(basemap) + geom_point(data = sp_data, aes(x=decimalLongitude, y=decimalLatitude), color ="red4") + ggtitle(x) #3
+	ggsave(filename = outname, plot=last_plot()) #4
+}
+```
+
+After runing the code you should be be able to see 23 pdf files in your working folder!
+
+
+
+
+
 
