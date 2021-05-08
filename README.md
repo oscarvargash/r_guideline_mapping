@@ -153,7 +153,7 @@ Finally that things look right we can map both latitude and longitud in a single
 plot(geodata_f2$decimalLongitude, geodata_f2$decimalLatitude)
 ```
 
-## Drawing our data into digital elevation model
+# Drawing our data into digital elevation model
 
 Plese make sure you have daca.csv and the folder "worldborders" in your working directories.
 You can download "worldborders" from:
@@ -210,7 +210,7 @@ hist(geodata_f2$decimalLongitude)
 plot(geodata_f2$decimalLongitude, geodata_f2$decimalLatitude)
 ```
 
-# Creating a digital elevation model baselayer
+## Creating a digital elevation model baselayer
 First we need to create a set of points acroos the boundig box were we plan to graph.
 Looking at the data we know that a good bound box is long -125 to -119 and lat 37 to 45
 
@@ -249,7 +249,7 @@ Now using worldborders we can cut only the land portion of our DEM tile
 elev = mask(elev, world_borders)
 ```
 
-# Mapping our points into a DEM
+## Mapping our points into a DEM
 We are ready to draw our points into a map. Let's do it step by step:
 
 Create a blanck map of the world
@@ -279,7 +279,7 @@ Congratulations !!!!!!!
 Sometimes there is the need to run a task many times for given dataset. Instead of pseudo copying your code many times al loop will be more efficient. For example, if we need to produce a map for 26 species we can create a loop that iterates over the list of species and creates all maps
 
 
-## Importing the dataset and creting a basemap
+## Importing the dataset and creating a basemap
 
 Let's install and load the packages nedeed for our exercise
 ```
